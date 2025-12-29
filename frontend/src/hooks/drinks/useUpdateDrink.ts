@@ -1,18 +1,10 @@
-// src/hooks/drinks/useUpdateDrink.ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateDrink } from "../../services/drinks";
+import { updateDrink, type UpdateDrinkInput } from "../../services/drinks";
 import { useAppStore } from "../../store/useAppStore";
 
 type UpdateArgs = {
   id: number;
-  data: {
-    name: string;
-    category: string;
-    price: string;
-    is_alcoholic: boolean;
-    ingredients?: string;
-    instructions?: string;
-  };
+  data: UpdateDrinkInput;
 };
 
 export function useUpdateDrink() {

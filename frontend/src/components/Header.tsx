@@ -92,15 +92,13 @@ export function Header() {
 
         {/* Hero SOLO Home */}
         {isHome && (
-          <div className="md:w-1/2 2xl:w-1/3 bg-orange-400 my-32 p-10 rounded-lg shadow">
-            <h1 className="text-white uppercase font-extrabold text-4xl text-center">
-              Catálogo de bebidas
+          <div className="md:w-1/2 2xl:w-1/3 my-32">
+            <h1 className="text-white uppercase font-extrabold text-4xl md:text-5xl leading-tight">
+              ¡ Bienvenidos a la página oficial de <span className="text-orange-400">Cocktail</span> !
             </h1>
-            <p className="text-white text-center mt-4">
-              Cargá, editá y guardá tus tragos favoritos
-            </p>
           </div>
         )}
+
       </div>
     </header>
   );

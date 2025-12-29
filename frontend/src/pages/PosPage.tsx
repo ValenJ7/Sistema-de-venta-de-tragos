@@ -12,6 +12,8 @@ import { PosProductPicker } from "../components/pos/PosProductPicker";
 import { PosCart, type CartItem } from "../components/pos/PosCart";
 import { PosNightSales } from "../components/pos/PosNightSales";
 
+import { printTicket } from "../services/print";
+
 function toNumberPrice(price: unknown) {
   const n = typeof price === "string" ? Number(price) : (price as number);
   return Number.isFinite(n) ? n : 0;
@@ -63,10 +65,20 @@ export function PosPage() {
     setCart([]);
   }
 
-  // 🔹 Confirmar venta → backend (sin alert)
+  // 🔹 Confirmar venta → backend + imprimir ticket
   function confirmSale() {
     if (!user) return;
     if (cart.length === 0) return;
+
+    // armamos items del ticket con el carrito actual (antes de limpiarlo)
+    const ticketItems = cart.map((i) => ({
+      qty: i.qty,
+      name: i.name,
+      unitPrice: i.price,
+      lineTotal: i.qty * i.price,
+    }));
+
+    const ticketTotal = ticketItems.reduce((acc, it) => acc + it.lineTotal, 0);
 
     createSaleMutation.mutate(
       {
@@ -79,20 +91,48 @@ export function PosPage() {
         })),
       },
       {
-        onSuccess: () => clearCart(),
+        onSuccess: async (created: any) => {
+          try {
+            await printTicket({
+              id: created?.id ?? created?.saleId,
+              createdAt: created?.createdAt,
+              cashier: { id: user.id, username: user.username },
+              items: ticketItems,
+              total: created?.total ?? ticketTotal,
+            });
+
+            useAppStore.getState().showNotification({
+              text: "Venta confirmada e impresa ✅",
+              error: false,
+            });
+          } catch (e) {
+            console.error(e);
+            useAppStore.getState().showNotification({
+              text: "Venta guardada, pero falló la impresión ⚠️",
+              error: true,
+            });
+          } finally {
+            clearCart();
+          }
+        },
+        onError: () => {
+          useAppStore.getState().showNotification({
+            text: "No se pudo confirmar la venta ❌",
+            error: true,
+          });
+        },
       }
     );
   }
 
-  // 🔹 Cerrar caja → backend (sin alert)
+  // 🔹 Cerrar caja → backend
   function handleCloseCash() {
     if (!user) return;
-
     closeCashMutation.mutate({ cashierUserId: user.id });
   }
 
   return (
-    <section className=" p-10 min-h-[70vh]">
+    <section className="p-10 min-h-[70vh]">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
         {/* LEFT */}
         <div>

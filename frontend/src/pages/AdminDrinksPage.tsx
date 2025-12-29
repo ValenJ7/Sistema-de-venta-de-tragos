@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { drinkFormSchema } from "../validation/drinkFormSchema";
 
 import { useDrinks } from "../hooks/drinks/useDrinks";
 import { useCreateDrink } from "../hooks/drinks/useCreateDrink";
@@ -23,12 +24,15 @@ export function AdminDrinksPage() {
   // ---------------------------
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
-  const [price, setPrice] = useState("");
+  const [price, setPrice] = useState(""); // input siempre string
   const [isAlcoholic, setIsAlcoholic] = useState(false);
   const [ingredients, setIngredients] = useState("");
   const [instructions, setInstructions] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
+
+  // ✅ Zod errors (por campo)
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -44,6 +48,7 @@ export function AdminDrinksPage() {
     setInstructions("");
     setImage(null);
     setEditingId(null);
+    setFormErrors({});
 
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -53,16 +58,47 @@ export function AdminDrinksPage() {
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
 
+    // ✅ Validación Zod antes de mutar
+    const parsed = drinkFormSchema.safeParse({
+      name,
+      category,
+      price, // string -> number (z.coerce.number)
+      is_alcoholic: isAlcoholic,
+      ingredients,
+      instructions,
+      image,
+    });
+
+    if (!parsed.success) {
+      const fieldErrors: Record<string, string> = {};
+      const flattened = parsed.error.flatten().fieldErrors;
+
+      // ✅ FIX TS: entries evita "any"
+      for (const [key, value] of Object.entries(flattened)) {
+        const msg = value?.[0];
+        if (msg) fieldErrors[key] = msg;
+      }
+
+      setFormErrors(fieldErrors);
+      return;
+    }
+
+    // si está OK, limpiamos errores
+    setFormErrors({});
+
+    // ---------------------------
+    // MUTATIONS
+    // ---------------------------
     if (editingId) {
       updateDrinkMutation.mutate({
         id: editingId,
         data: {
-          name,
-          category,
-          price,
-          is_alcoholic: isAlcoholic,
-          ingredients,
-          instructions,
+          name: parsed.data.name,
+          category: parsed.data.category,
+          price: parsed.data.price, // ✅ number
+          is_alcoholic: parsed.data.is_alcoholic,
+          ingredients: parsed.data.ingredients,
+          instructions: parsed.data.instructions,
         },
       });
 
@@ -78,13 +114,13 @@ export function AdminDrinksPage() {
     }
 
     createDrinkMutation.mutate({
-      name,
-      category,
-      price,
-      is_alcoholic: isAlcoholic,
-      ingredients,
-      instructions,
-      image,
+      name: parsed.data.name,
+      category: parsed.data.category,
+      price: parsed.data.price, // ✅ number
+      is_alcoholic: parsed.data.is_alcoholic,
+      ingredients: parsed.data.ingredients,
+      instructions: parsed.data.instructions,
+      image: parsed.data.image ?? null,
     });
 
     resetForm();
@@ -115,27 +151,48 @@ export function AdminDrinksPage() {
               {editingId ? "Editar trago" : "Nuevo trago"}
             </h2>
 
-            <input
-              className="p-3 w-full rounded-lg bg-amber-50"
-              placeholder="Nombre"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+            <div className="space-y-1">
+              <input
+                className="p-3 w-full rounded-lg bg-amber-50"
+                placeholder="Nombre"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              {formErrors.name && (
+                <p className="text-sm font-semibold text-red-900">
+                  {formErrors.name}
+                </p>
+              )}
+            </div>
 
-            <input
-              className="p-3 w-full rounded-lg bg-amber-50"
-              placeholder="Categoría"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            />
+            <div className="space-y-1">
+              <input
+                className="p-3 w-full rounded-lg bg-amber-50"
+                placeholder="Categoría"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              />
+              {formErrors.category && (
+                <p className="text-sm font-semibold text-red-900">
+                  {formErrors.category}
+                </p>
+              )}
+            </div>
 
-            <input
-              type="number"
-              className="p-3 w-full rounded-lg bg-amber-50"
-              placeholder="Precio"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-            />
+            <div className="space-y-1">
+              <input
+                type="number"
+                className="p-3 w-full rounded-lg bg-amber-50"
+                placeholder="Precio"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+              />
+              {formErrors.price && (
+                <p className="text-sm font-semibold text-red-900">
+                  {formErrors.price}
+                </p>
+              )}
+            </div>
 
             <label className="flex items-center gap-3 text-white font-bold">
               <input
@@ -146,21 +203,35 @@ export function AdminDrinksPage() {
               Es alcohólica
             </label>
 
-            <textarea
-              rows={4}
-              className="p-3 w-full rounded-lg bg-amber-50"
-              placeholder="Ingredientes"
-              value={ingredients}
-              onChange={(e) => setIngredients(e.target.value)}
-            />
+            <div className="space-y-1">
+              <textarea
+                rows={4}
+                className="p-3 w-full rounded-lg bg-amber-50"
+                placeholder="Ingredientes"
+                value={ingredients}
+                onChange={(e) => setIngredients(e.target.value)}
+              />
+              {formErrors.ingredients && (
+                <p className="text-sm font-semibold text-red-900">
+                  {formErrors.ingredients}
+                </p>
+              )}
+            </div>
 
-            <textarea
-              rows={5}
-              className="p-3 w-full rounded-lg bg-amber-50"
-              placeholder="Instrucciones"
-              value={instructions}
-              onChange={(e) => setInstructions(e.target.value)}
-            />
+            <div className="space-y-1">
+              <textarea
+                rows={5}
+                className="p-3 w-full rounded-lg bg-amber-50"
+                placeholder="Instrucciones"
+                value={instructions}
+                onChange={(e) => setInstructions(e.target.value)}
+              />
+              {formErrors.instructions && (
+                <p className="text-sm font-semibold text-red-900">
+                  {formErrors.instructions}
+                </p>
+              )}
+            </div>
 
             <input
               ref={fileInputRef}
@@ -241,6 +312,7 @@ export function AdminDrinksPage() {
                           setIngredients(drink.ingredients ?? "");
                           setInstructions(drink.instructions ?? "");
                           setImage(null);
+                          setFormErrors({});
 
                           if (fileInputRef.current) {
                             fileInputRef.current.value = "";

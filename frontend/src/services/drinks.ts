@@ -23,7 +23,7 @@ export async function getDrinks() {
 export type CreateDrinkInput = {
   name: string;
   category: string;
-  price: string;
+  price: number; // ✅ number
   is_alcoholic: boolean;
   ingredients?: string;
   instructions?: string;
@@ -35,21 +35,20 @@ export async function deleteDrink(id: number) {
   return res.data;
 }
 
-export async function updateDrink(
-  id: number,
-  input: {
-    name: string;
-    category: string;
-    price: string;
-    is_alcoholic: boolean;
-    ingredients?: string;
-    instructions?: string;
-  }
-) {
+export type UpdateDrinkInput = {
+  name: string;
+  category: string;
+  price: number; // ✅ number
+  is_alcoholic: boolean;
+  ingredients?: string;
+  instructions?: string;
+};
+
+export async function updateDrink(id: number, input: UpdateDrinkInput) {
   const form = new URLSearchParams();
   form.append("name", input.name);
   form.append("category", input.category);
-  form.append("price", input.price);
+  form.append("price", String(input.price)); // ✅ convertimos acá
   form.append("is_alcoholic", input.is_alcoholic ? "1" : "0");
 
   if (input.ingredients !== undefined) {
@@ -73,7 +72,7 @@ export async function createDrink(input: CreateDrinkInput) {
   const form = new FormData();
   form.append("name", input.name);
   form.append("category", input.category);
-  form.append("price", input.price);
+  form.append("price", String(input.price)); // ✅ convertimos acá
   form.append("is_alcoholic", input.is_alcoholic ? "1" : "0");
 
   if (input.ingredients) {
