@@ -1,10 +1,19 @@
 import type { StateCreator } from "zustand";
-import type { DrinkDTO } from "../services/drinks";
+
+// Definimos el tipo aquí para romper la dependencia con el backend
+export type Drink = {
+  id: number;
+  name: string;
+  category?: string;
+  image_path?: string;
+  price?: number;
+  description?: string;
+};
 
 export type DrinksModalSliceType = {
   modal: boolean;
-  selectedDrink: DrinkDTO | null;
-  openDrinkModal: (drink: DrinkDTO) => void;
+  selectedDrink: Drink | null;
+  openDrinkModal: (drink: Drink) => void;
   closeDrinkModal: () => void;
 };
 

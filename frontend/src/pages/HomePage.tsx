@@ -1,41 +1,30 @@
 import DrinkCard from "../components/DrinkCard";
 import { HomeStorySection } from "../components/HomeStorySection";
-import { useDrinks } from "../hooks/drinks/useDrinks";
+
+// Datos estáticos (hardcoded) para que la vista no esté vacía
+const MOCK_DRINKS = [
+  { id: 1, name: "Mojito Clásico", price: 4500, category: "Tragos", image: "/assets/home/imagen1.webp" },
+  { id: 2, name: "Fernet Branca", price: 5000, category: "Tragos", image: "/assets/home/imagen2.jpg" },
+  { id: 3, name: "Gin Tonic Premium", price: 4800, category: "Tragos", image: "/assets/home/imagen3.jpg" },
+  { id: 4, name: "Negroni", price: 5200, category: "Tragos", image: "/assets/home/imagen1.webp" },
+];
 
 export function HomePage() {
-  const {
-    data: drinks,
-    isLoading,
-    isError,
-    error,
-  } = useDrinks();
-
-  if (isLoading) {
-    return <p className="text-center mt-10">Cargando...</p>;
-  }
-
-  if (isError) {
-    return (
-      <p className="text-center mt-10 text-red-500">
-        Error al cargar los tragos
-      </p>
-    );
-  }
-
   return (
     <>
-      <section className=" pb-15">
+      <section className="pb-15">
         <HomeStorySection />
       </section>
 
-      <h1 className="text-6xl font-extrabold pt-10 text-center">Catálogo de bebidas</h1>
+      <h1 className="text-6xl font-extrabold pt-10 text-center">
+        Catálogo de bebidas
+      </h1>
 
       <section className="pt-10 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-8">
-        {drinks?.map((drink) => (
+        {MOCK_DRINKS.map((drink) => (
           <DrinkCard key={drink.id} drink={drink} />
         ))}
       </section>
-
     </>
   );
 }
