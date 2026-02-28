@@ -1,8 +1,5 @@
-import { createBrowserRouter, ScrollRestoration } from "react-router-dom";
-
+import { createBrowserRouter, ScrollRestoration, Navigate } from "react-router-dom";
 import { Layout } from "./layout/Layout";
-import { HomePage } from "./pages/HomePage";
-import FavoritesPage from "./pages/FavoritesPage";
 import { AdminDrinksPage } from "./pages/AdminDrinksPage";
 import { LoginPage } from "./pages/LoginPage";
 import { PosPage } from "./pages/PosPage";
@@ -19,19 +16,19 @@ export const router = createBrowserRouter([
       </>
     ),
     children: [
-      { index: true, element: <HomePage /> },
-      { path: "favoritos", element: <FavoritesPage /> },
-
-      // Rutas de Administración (Ahora públicas)
+      // Ahora la raíz es el Login
+      { index: true, element: <LoginPage /> },
+      
+      // Rutas de Administración
       { path: "admin", element: <AdminDrinksPage /> },
       { path: "admin/dashboard", element: <AdminDashboardPage /> },
       { path: "admin/caja/:cashierUserId", element: <AdminCashierShiftPage /> },
 
-      // Ruta de Caja/POS (Ahora pública)
+      // POS
       { path: "pos", element: <PosPage /> },
 
-      // Login (Opcional, podrías incluso borrarlo después)
-      { path: "login", element: <LoginPage /> },
+      // Redirección por si alguien intenta entrar a /login manualmente
+      { path: "login", element: <Navigate to="/" replace /> },
     ],
   },
 ]);

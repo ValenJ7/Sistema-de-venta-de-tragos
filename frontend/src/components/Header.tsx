@@ -1,52 +1,45 @@
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
-import { useMemo } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAppStore } from "../store/useAppStore";
 
 export function Header() {
-  const { pathname } = useLocation();
   const navigate = useNavigate();
-  const isHome = useMemo(() => pathname === "/", [pathname]);
-
   const user = useAppStore((s) => s.user);
   const clearSession = useAppStore((s) => s.clearSession);
 
   const handleLogout = () => {
     clearSession();
-    navigate("/login");
+    navigate("/");
   };
 
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     `uppercase font-bold transition ${isActive ? "text-orange-400" : "text-white hover:text-orange-200"}`;
 
   return (
-    <header className={isHome ? "bg-slate-900 bg-[url(/bg.jpg)] bg-center bg-cover" : "bg-slate-800"}>
-      <div className="mx-auto container px-5 py-10">
+    <header className="bg-slate-800 shadow-md">
+      <div className="mx-auto container px-5 py-6">
         <div className="flex justify-between items-center">
-          <img src="/logo.svg" alt="logo" className="w-24" />
+          <div className="flex items-center gap-4">
+            <img src="/logo.svg" alt="logo" className="w-12" />
+            <span className="text-white font-black text-xl tracking-tighter">COCKTAIL ADMIN</span>
+          </div>
+
           <nav className="flex gap-6 items-center">
-            <NavLink to="/" className={linkClass}>Inicio</NavLink>
-            <NavLink to="/favoritos" className={linkClass}>Favoritos</NavLink>
-            {user?.role === "caja" && <NavLink to="/pos" className={linkClass}>Caja</NavLink>}
-            {user?.role === "admin" && (
+            {user && (
               <>
-                <NavLink to="/admin" className={linkClass}>Admin</NavLink>
+                <NavLink to="/admin" className={linkClass} end>Productos</NavLink>
                 <NavLink to="/admin/dashboard" className={linkClass}>Dashboard</NavLink>
+                <NavLink to="/pos" className={linkClass}>Caja</NavLink>
+                
+                <button 
+                  onClick={handleLogout} 
+                  className="bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white px-4 py-2 rounded-lg font-bold transition text-xs uppercase"
+                >
+                  Salir
+                </button>
               </>
-            )}
-            {!user ? (
-              <NavLink to="/login" className="bg-orange-500 text-white px-4 py-2 rounded-lg font-bold">Entrar</NavLink>
-            ) : (
-              <button onClick={handleLogout} className="text-white bg-white/10 px-4 py-2 rounded-lg font-bold">Salir</button>
             )}
           </nav>
         </div>
-        {isHome && (
-          <div className="my-20 md:w-1/2">
-            <h1 className="text-white text-5xl font-extrabold uppercase leading-tight">
-              ¡ Bienvenidos a <span className="text-orange-400">Cocktail</span> !
-            </h1>
-          </div>
-        )}
       </div>
     </header>
   );
