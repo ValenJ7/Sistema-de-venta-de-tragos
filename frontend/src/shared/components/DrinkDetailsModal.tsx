@@ -1,6 +1,6 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
-import { useAppStore } from "../store/useAppStore";
+import { useAppStore } from "../../app/stores/useAppStore";
 
 export default function DrinkDetailsModal() {
   const modal = useAppStore((s) => s.modal);
@@ -39,14 +39,14 @@ export default function DrinkDetailsModal() {
                       {imageUrl && <img src={imageUrl} alt={selectedDrink.name} className="mx-auto w-96 rounded-lg" />}
 
                       <div className="mt-5 space-y-4 text-gray-800">
-                         <p className="text-lg"><span className="font-bold">Categoría:</span> {selectedDrink.category || 'General'}</p>
-                         <p className="font-bold text-2xl text-orange-500">${selectedDrink.price}</p>
+                        <p className="text-lg"><span className="font-bold">Categoría:</span> {selectedDrink.category || 'General'}</p>
+                        <p className="font-bold text-2xl text-orange-500">${selectedDrink.price}</p>
                       </div>
 
                       <div className="mt-5 flex justify-between gap-4">
                         <button type="button" className="w-full rounded bg-gray-200 p-3 font-bold uppercase text-gray-700" onClick={closeDrinkModal}>Cerrar</button>
-                        <button 
-                          type="button" 
+                        <button
+                          type="button"
                           className={`w-full rounded p-3 font-bold uppercase text-white shadow transition ${isFav ? "bg-slate-700" : "bg-orange-500"}`}
                           onClick={() => setIsFav(!isFav)}
                         >

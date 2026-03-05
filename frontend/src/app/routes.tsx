@@ -1,10 +1,10 @@
 import { createBrowserRouter, ScrollRestoration, Navigate } from "react-router-dom";
-import { Layout } from "./layout/Layout";
-import { AdminDrinksPage } from "./pages/AdminDrinksPage";
-import { LoginPage } from "./pages/LoginPage";
-import { PosPage } from "./pages/PosPage";
-import { AdminDashboardPage } from "./pages/AdminDashboardPage";
-import { AdminCashierShiftPage } from "./pages/AdminCashierShiftPage";
+import { Layout } from "../shared/components/Layout";
+import { DrinksPage as AdminDrinksPage } from "../features/admin/views/DrinksPage";
+import { LoginPage } from "../features/auth/views/LoginPage";
+import { PosPage } from "../features/pos/views/PosPage";
+import { DashboardPage as AdminDashboardPage } from "../features/admin/views/DashboardPage";
+import { ShiftsPage as AdminCashierShiftPage } from "../features/admin/views/ShiftsPage";
 
 export const router = createBrowserRouter([
   {
@@ -18,7 +18,7 @@ export const router = createBrowserRouter([
     children: [
       // Ahora la raíz es el Login
       { index: true, element: <LoginPage /> },
-      
+
       // Rutas de Administración
       { path: "admin", element: <AdminDrinksPage /> },
       { path: "admin/dashboard", element: <AdminDashboardPage /> },

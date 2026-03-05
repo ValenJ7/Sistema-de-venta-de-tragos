@@ -1,4 +1,4 @@
-import { useAppStore } from "../store/useAppStore";
+import { useAppStore } from "../../app/stores/useAppStore";
 
 // Definimos la interfaz local para no depender de services/drinks
 interface Drink {

@@ -1,9 +1,9 @@
 import { Outlet, useLocation } from "react-router-dom";
-import { Header } from "../components/Header";
-import DrinkDetailsModal from "../components/DrinkDetailsModal";
-import Notification from "../components/Notification";
+import { Header } from "./Header";
+import DrinkDetailsModal from "./DrinkDetailsModal";
+import Notification from "./Notification";
 export function Layout() {
-  const { pathname } = useLocation();
+  useLocation();
 
 
 
