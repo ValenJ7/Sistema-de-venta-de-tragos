@@ -19,8 +19,7 @@ const options: swaggerJSDoc.Options = {
             description: "API Docs para el sistema de ventas de tragos"
         }
     },
-    // Archivos donde Swagger buscará las anotaciones (comentarios con @swagger)
-    apis: ['./src/router.ts'] 
+    apis: ['./src/routes/*.ts'] 
 }
 
 const swaggerSpec = swaggerJSDoc(options);

@@ -3,7 +3,7 @@ import colors from 'colors';
 import swaggerUi from 'swagger-ui-express'; // Importante
 import swaggerSpec from './config/swagger'; // Importante
 import db from './config/db';
-import router from './router';
+import router from './routes/router';
 
 async function connectDB() {
     try {
