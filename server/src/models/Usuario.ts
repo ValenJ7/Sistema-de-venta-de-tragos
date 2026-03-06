@@ -35,6 +35,13 @@ class Usuario extends Model {
     @BelongsTo(() => Rol)
     declare rol: Rol;
 
+    @Column({
+        type: DataType.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
+    })
+    declare activo: boolean;
+
     @ForeignKey(() => Negocio)
     @Column({
         type: DataType.INTEGER,
